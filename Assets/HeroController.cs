@@ -8,6 +8,8 @@ public class HeroController : MonoBehaviour {
 	float maxJumpForce = 300;
 	float currentJumpForce = 50;
 
+	public LayerMask groundLayer;
+
 	// Use this for initialization
 	void Start () {
 		player = this.gameObject;
@@ -16,6 +18,7 @@ public class HeroController : MonoBehaviour {
 
 	void Update ()
 	{
+		bool grounded = Physics2D.OverlapCircle (player.transform.position, 0.2f, groundLayer);
 		if (Input.GetKey ("right"))
 		{
 			Rigidbody2D rigidbody = player.GetComponent<Rigidbody2D>();
@@ -27,22 +30,22 @@ public class HeroController : MonoBehaviour {
 			rigidbody.AddForce(new Vector2(-10,0));
 		}
 
-		if (Input.GetKey ("space"))
-		{
-			currentJumpForce += 5;
+		if (grounded) {
+			if (Input.GetKey ("space")) {
+				currentJumpForce += 5;
 
-			if (currentJumpForce > maxJumpForce)
-				currentJumpForce = maxJumpForce;
+				if (currentJumpForce > maxJumpForce)
+					currentJumpForce = maxJumpForce;
 
-			Debug.Log("charge "+currentJumpForce);
-		}
+				Debug.Log ("charge " + currentJumpForce);
+			}
 
-		if (Input.GetKeyUp ("space"))
-		{
-			Rigidbody2D rigidbody = player.GetComponent<Rigidbody2D>();
-			rigidbody.AddForce(new Vector2(0,currentJumpForce));
-			Debug.Log("saut charger a "+currentJumpForce);
-			currentJumpForce = minJumpForce;
+			if (Input.GetKeyUp ("space")) {
+				Rigidbody2D rigidbody = player.GetComponent<Rigidbody2D> ();
+				rigidbody.AddForce (new Vector2 (0, currentJumpForce));
+				Debug.Log ("saut charger a " + currentJumpForce);
+				currentJumpForce = minJumpForce;
+			}
 		}
 	}
 }
