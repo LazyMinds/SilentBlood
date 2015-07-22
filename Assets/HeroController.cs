@@ -5,8 +5,9 @@ public class HeroController : MonoBehaviour {
 
 	GameObject player;
 	float minJumpForce = 150;
-	float maxJumpForce = 300;
+	float maxJumpForce = 500;
 	float currentJumpForce = 50;
+	float maxVelocity = 5;
 
 	public LayerMask groundLayer;
 
@@ -18,21 +19,24 @@ public class HeroController : MonoBehaviour {
 
 	void Update ()
 	{
+		Camera.main.transform.position = new Vector3 (player.transform.position.x, Camera.main.transform.position.y, Camera.main.transform.position.z);
 		bool grounded = Physics2D.OverlapCircle (player.transform.position, 0.2f, groundLayer);
 		if (Input.GetKey ("right"))
 		{
 			Rigidbody2D rigidbody = player.GetComponent<Rigidbody2D>();
-			rigidbody.AddForce(new Vector2(10,0));
+			if (Mathf.Abs(rigidbody.velocity.x) < maxVelocity)
+				rigidbody.AddForce(new Vector2(10,0));
 		}
 		else if (Input.GetKey ("left"))
 		{
 			Rigidbody2D rigidbody = player.GetComponent<Rigidbody2D>();
-			rigidbody.AddForce(new Vector2(-10,0));
+			if (Mathf.Abs(rigidbody.velocity.x) < maxVelocity)
+				rigidbody.AddForce(new Vector2(-10,0));
 		}
 
 		if (grounded) {
 			if (Input.GetKey ("space")) {
-				currentJumpForce += 5;
+				currentJumpForce += 10;
 
 				if (currentJumpForce > maxJumpForce)
 					currentJumpForce = maxJumpForce;
