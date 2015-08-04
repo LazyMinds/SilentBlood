@@ -15,6 +15,9 @@ public class HeroController : MonoBehaviour {
 	private float minJumpForce = 300;
 	private float maxJumpForce = 600;
 	private float currentJumpForce = 50;
+	
+	private float groundDistance = 0;
+	private float groundTolerance = 1f;
 
 	private float maxVelocity = 5;
 	private float maxVelocityForChargeJump = 0.5f;
@@ -34,8 +37,10 @@ public class HeroController : MonoBehaviour {
 		// Camera follow
 		Camera.main.transform.position = new Vector3 (player.transform.position.x, Camera.main.transform.position.y, Camera.main.transform.position.z);
 
+		RaycastHit2D hit = Physics2D.Raycast(player.transform.position, -Vector2.up, Mathf.Infinity, groundLayer);
+		groundDistance = Mathf.Abs(hit.point.y - (transform.position.y - player.GetComponent<Collider2D>().bounds.size.y));
 
-		grounded = Physics2D.OverlapCircle (player.transform.position, 1f, groundLayer);
+		grounded = (groundDistance < groundTolerance);
 
 		// Jump & Charged Jump
 		if (grounded) {
@@ -92,15 +97,17 @@ public class HeroController : MonoBehaviour {
 			"Velocity x : " + GetComponent<Rigidbody2D> ().velocity.x.ToString () + "\n" +
 			"Velocity y : " + GetComponent<Rigidbody2D> ().velocity.y.ToString () + "\n" +
 			"Grounded : " + grounded.ToString () + "\n" +
-			"Sprite Rotation : " + player.transform.eulerAngles.y;
-			
+			"Ground Distance : " + groundDistance.ToString () + "\n" +
+			"Direction : " + player.transform.eulerAngles.y;
 	}
 
 	private void refreshDataAnimation ()
 	{
+		GetComponent<Animator> ().SetFloat ("VelocityNegX", GetComponent<Rigidbody2D> ().velocity.x);
 		GetComponent<Animator> ().SetFloat ("VelocityX", Mathf.Abs(GetComponent<Rigidbody2D> ().velocity.x));
 		GetComponent<Animator> ().SetFloat ("VelocityY", GetComponent<Rigidbody2D> ().velocity.y);
 		GetComponent<Animator> ().SetBool ("Grounded", grounded);
 		GetComponent<Animator> ().SetBool ("ChargeJump", chargeJump);
+		GetComponent<Animator> ().SetInteger("Direction", (int)player.transform.eulerAngles.y);
 	}
 }
