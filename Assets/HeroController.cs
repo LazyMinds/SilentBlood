@@ -17,7 +17,7 @@ public class HeroController : MonoBehaviour {
 	private float currentJumpForce = 50;
 	
 	private float groundDistance = 0;
-	private float groundTolerance = 1f;
+	private float groundTolerance = 0.1f;
 
 	private float maxVelocity = 5;
 	private float maxVelocityForChargeJump = 0.5f;
@@ -36,9 +36,13 @@ public class HeroController : MonoBehaviour {
 	{
 		// Camera follow
 		Camera.main.transform.position = new Vector3 (player.transform.position.x, Camera.main.transform.position.y, Camera.main.transform.position.z);
+		Vector3 playerBottom = new Vector3(player.transform.position.x, player.transform.position.y-(player.GetComponent<SpriteRenderer>().bounds.size.y/2), player.transform.position.z);
 
-		RaycastHit2D hit = Physics2D.Raycast(player.transform.position, -Vector2.up, Mathf.Infinity, groundLayer);
-		groundDistance = Mathf.Abs(hit.point.y - (transform.position.y - player.GetComponent<Collider2D>().bounds.size.y));
+		RaycastHit2D hit = Physics2D.Raycast(playerBottom, -Vector2.up, Mathf.Infinity, groundLayer);
+		//Color color = hit ? Color.green : Color.red;
+		//Debug.DrawRay(playerBottom, -Vector2.up, color);
+		groundDistance = Mathf.Abs(hit.point.y - playerBottom.y);
+
 
 		grounded = (groundDistance < groundTolerance);
 
