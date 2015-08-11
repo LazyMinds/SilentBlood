@@ -36,15 +36,33 @@ public class HeroController : MonoBehaviour {
 	{
 		// Camera follow
 		Camera.main.transform.position = new Vector3 (player.transform.position.x, Camera.main.transform.position.y, Camera.main.transform.position.z);
-		Vector3 playerBottom = new Vector3(player.transform.position.x, player.transform.position.y-(player.GetComponent<SpriteRenderer>().bounds.size.y/2), player.transform.position.z);
-
-		RaycastHit2D hit = Physics2D.Raycast(playerBottom, -Vector2.up, Mathf.Infinity, groundLayer);
-		//Color color = hit ? Color.green : Color.red;
-		//Debug.DrawRay(playerBottom, -Vector2.up, color);
-		groundDistance = Mathf.Abs(hit.point.y - playerBottom.y);
 
 
-		grounded = (groundDistance < groundTolerance);
+		Collider2D collider2d = player.GetComponent<Collider2D> ();
+		Vector3 playerBottomLeft = new Vector3 (collider2d.transform.position.x - collider2d.bounds.size.x / 2, collider2d.transform.position.y - (collider2d.bounds.size.y / 2) + collider2d.offset.y, collider2d.transform.position.z);
+		Vector3 playerBottomMid = new Vector3 (collider2d.transform.position.x, collider2d.transform.position.y - (collider2d.bounds.size.y / 2) + collider2d.offset.y, collider2d.transform.position.z);
+		Vector3 playerBottomRight = new Vector3 (collider2d.transform.position.x + collider2d.bounds.size.x / 2, collider2d.transform.position.y - (collider2d.bounds.size.y / 2) + collider2d.offset.y, collider2d.transform.position.z);
+
+		RaycastHit2D hit1 = Physics2D.Raycast(playerBottomLeft, -Vector2.up, Mathf.Infinity, groundLayer);
+		RaycastHit2D hit2 = Physics2D.Raycast(playerBottomMid, -Vector2.up, Mathf.Infinity, groundLayer);
+		RaycastHit2D hit3 = Physics2D.Raycast(playerBottomRight, -Vector2.up, Mathf.Infinity, groundLayer);
+		/*Color color1 = hit1 ? Color.blue : Color.red;
+		Debug.DrawRay(playerBottomLeft, -Vector2.up, color1);*/
+		float groundDistanceTemp1 = Mathf.Abs(hit1.point.y - playerBottomLeft.y);
+		float groundDistanceTemp2 = Mathf.Abs(hit2.point.y - playerBottomRight.y);
+		float groundDistanceTemp3 = Mathf.Abs(hit3.point.y - playerBottomRight.y);
+
+
+		grounded = ((groundDistanceTemp1 < groundTolerance) || (groundDistanceTemp2 < groundTolerance) || (groundDistanceTemp3 < groundTolerance));
+		if (grounded)
+		{
+			if (groundDistanceTemp1 <= groundDistanceTemp2 && groundDistanceTemp1 <= groundDistanceTemp3)
+				groundDistance = groundDistanceTemp1;
+			else if (groundDistanceTemp2 <= groundDistanceTemp1 && groundDistanceTemp2 <= groundDistanceTemp3)
+				groundDistance = groundDistanceTemp2;
+			else
+				groundDistance = groundDistanceTemp3;
+		}
 
 		// Jump & Charged Jump
 		if (grounded) {
@@ -113,5 +131,6 @@ public class HeroController : MonoBehaviour {
 		GetComponent<Animator> ().SetBool ("Grounded", grounded);
 		GetComponent<Animator> ().SetBool ("ChargeJump", chargeJump);
 		GetComponent<Animator> ().SetInteger("Direction", (int)player.transform.eulerAngles.y);
+		GetComponent<Animator> ().SetFloat("GroundDistance", groundDistance);
 	}
 }
