@@ -107,9 +107,17 @@ public class HeroController : MonoBehaviour {
 				rigidbody.velocity = new Vector2(-maxVelocity, rigidbody.velocity.y);
 		}
 
-		refreshDataAnimation ();
+		refreshDataAnimation ();    
 		showDebugIngameConsole ();
 	}
+
+    void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.name.StartsWith("Bot"))
+        {
+            Debug.Log("Player Sound Detected");
+        }
+    }
 
 	private void showDebugIngameConsole()
 	{
