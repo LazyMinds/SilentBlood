@@ -6,8 +6,12 @@ public class HeroController : MonoBehaviour {
 
 	public LayerMask groundLayer;
 	public Text inGameConsole;
+	public GameObject arrow;
+	public GameObject sword;
 
-	private GameObject player;
+	private GameObject player = null;
+	private GameObject dir = null;
+
 
 	private float runForceByUpdate = 10;
 
@@ -30,10 +34,29 @@ public class HeroController : MonoBehaviour {
 	{
 		player = this.gameObject;
 		currentJumpForce = minJumpForce;
+		dir = Instantiate (arrow, player.transform.position, Quaternion.identity) as GameObject;
 	}
 
 	void Update ()
 	{
+		// WIP
+		dir.transform.position = player.transform.position;
+		Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+		mousePosition.z = player.transform.position.z;
+		dir.transform.eulerAngles = new Vector3(0,0,Mathf.Atan2((mousePosition.y - player.transform.position.y), (mousePosition.x - player.transform.position.x))*Mathf.Rad2Deg);
+		Vector3 distanceFromObject = mousePosition - player.transform.position;
+		dir.transform.localScale = new Vector3 (distanceFromObject.magnitude, dir.transform.localScale.y, dir.transform.localScale.z);
+
+		if (Input.GetMouseButtonUp(0))
+		{
+			GameObject swordThrow = Instantiate (sword, player.transform.position, Quaternion.Inverse(dir.transform.rotation)) as GameObject;
+			Physics2D.IgnoreCollision (swordThrow.GetComponent<Collider2D>(), player.GetComponent<Collider2D>());
+			swordThrow.GetComponent<Rigidbody2D> ().AddForce (new Vector2 (distanceFromObject.x*30, distanceFromObject.y*30));
+		}
+		// End WIP
+
+
+
 		// Camera follow
 		Camera.main.transform.position = new Vector3 (player.transform.position.x, Camera.main.transform.position.y, Camera.main.transform.position.z);
 
