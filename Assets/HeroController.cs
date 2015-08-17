@@ -10,7 +10,10 @@ public class HeroController : MonoBehaviour {
 	public GameObject sword;
 
 	private GameObject player = null;
+	private Rigidbody2D rigidbody = null;
 	private GameObject dir = null;
+
+	private Console console = null;
 
 
 	private float runForceByUpdate = 10;
@@ -32,7 +35,9 @@ public class HeroController : MonoBehaviour {
 
 	void Start ()
 	{
+		console = Camera.main.GetComponent<Console> ();
 		player = this.gameObject;
+		rigidbody = player.GetComponent<Rigidbody2D> (); 
 		currentJumpForce = minJumpForce;
 		dir = Instantiate (arrow, player.transform.position, Quaternion.identity) as GameObject;
 	}
@@ -131,34 +136,38 @@ public class HeroController : MonoBehaviour {
 		}
 
 		refreshDataAnimation ();    
-		showDebugIngameConsole ();
+		updateConsoleData ();
 	}
 
     void OnTriggerEnter2D(Collider2D other)
     {
         if (other.name.StartsWith("Bot"))
         {
-            Debug.Log("Player Sound Detected");
+			Camera.main.GetComponent<Console>().SoundSpotted = true;
         }
     }
 
-	private void showDebugIngameConsole()
+	void OnTriggerExit2D()
 	{
-		inGameConsole.text =
-			"ChargeJump : "+chargeJump.ToString() + "\n" +
-			"ChargeJumpForce : " + currentJumpForce.ToString () + "\n" +
-			"Velocity x : " + GetComponent<Rigidbody2D> ().velocity.x.ToString () + "\n" +
-			"Velocity y : " + GetComponent<Rigidbody2D> ().velocity.y.ToString () + "\n" +
-			"Grounded : " + grounded.ToString () + "\n" +
-			"Ground Distance : " + groundDistance.ToString () + "\n" +
-			"Direction : " + player.transform.eulerAngles.y;
+		Camera.main.GetComponent<Console>().SoundSpotted = false;
+	}
+
+	private void updateConsoleData()
+	{
+		console.ChargeJump = chargeJump;
+		console.CurrentJumpForce = currentJumpForce;
+		console.VelocityX = rigidbody.velocity.x;
+		console.VelocityY = rigidbody.velocity.y;
+		console.Grounded = grounded;
+		console.GroundDistance = groundDistance;
+		console.Direction = (int)player.transform.eulerAngles.y;
 	}
 
 	private void refreshDataAnimation ()
 	{
-		GetComponent<Animator> ().SetFloat ("VelocityNegX", GetComponent<Rigidbody2D> ().velocity.x);
-		GetComponent<Animator> ().SetFloat ("VelocityX", Mathf.Abs(GetComponent<Rigidbody2D> ().velocity.x));
-		GetComponent<Animator> ().SetFloat ("VelocityY", GetComponent<Rigidbody2D> ().velocity.y);
+		GetComponent<Animator> ().SetFloat ("VelocityNegX", rigidbody.velocity.x);
+		GetComponent<Animator> ().SetFloat ("VelocityX", Mathf.Abs(rigidbody.velocity.x));
+		GetComponent<Animator> ().SetFloat ("VelocityY", rigidbody.velocity.y);
 		GetComponent<Animator> ().SetBool ("Grounded", grounded);
 		GetComponent<Animator> ().SetBool ("ChargeJump", chargeJump);
 		GetComponent<Animator> ().SetInteger("Direction", (int)player.transform.eulerAngles.y);
