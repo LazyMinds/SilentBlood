@@ -120,7 +120,7 @@ public class HeroController : MonoBehaviour {
 			}
 		}
 
-		if (Input.GetKey ("right"))
+		if (Input.GetKey ("right") || Input.GetKey(KeyCode.D))
 		{
 			player.transform.rotation = Quaternion.Euler(0, -180, 0);
 			Rigidbody2D rigidbody = player.GetComponent<Rigidbody2D>();
@@ -128,7 +128,7 @@ public class HeroController : MonoBehaviour {
 			if (rigidbody.velocity.x > maxVelocity)
 				rigidbody.velocity = new Vector2(maxVelocity, rigidbody.velocity.y);
 		}
-		else if (Input.GetKey ("left"))
+		else if (Input.GetKey ("left") || Input.GetKey(KeyCode.Q))
 		{
 			player.transform.rotation = Quaternion.Euler(0, 0, 0);
 			Rigidbody2D rigidbody = player.GetComponent<Rigidbody2D>();
