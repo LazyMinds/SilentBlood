@@ -8,13 +8,12 @@ public class HeroController : MonoBehaviour {
 	public Text inGameConsole;
 	public GameObject arrow;
 	public GameObject sword;
-
+    
 	private GameObject player = null;
 	private Rigidbody2D rigidbody = null;
-	private GameObject dir = null;
-
+    private CircleCollider2D soundCollider;
+    private GameObject dir = null;
 	private Console console = null;
-
 
 	private float runForceByUpdate = 10;
 
@@ -29,6 +28,8 @@ public class HeroController : MonoBehaviour {
 	private float maxVelocity = 5;
 	private float maxVelocityForChargeJump = 0.5f;
 
+    private float maxSoundRadius = 5;
+
 	private bool grounded = true;
 	private bool chargeJump = false;
 	
@@ -37,7 +38,8 @@ public class HeroController : MonoBehaviour {
 	{
 		console = Camera.main.GetComponent<Console> ();
 		player = this.gameObject;
-		rigidbody = player.GetComponent<Rigidbody2D> (); 
+		rigidbody = player.GetComponent<Rigidbody2D> ();
+        soundCollider = player.GetComponent<CircleCollider2D>();
 		currentJumpForce = minJumpForce;
 		dir = Instantiate (arrow, player.transform.position, Quaternion.identity) as GameObject;
 	}
@@ -135,6 +137,12 @@ public class HeroController : MonoBehaviour {
 				rigidbody.velocity = new Vector2(-maxVelocity, rigidbody.velocity.y);
 		}
 
+        // Sound radius based on player velocity
+        Vector2 velocity = player.GetComponent<Rigidbody2D>().velocity;
+        soundCollider.radius = Mathf.Abs(velocity.x + velocity.y);
+        if (soundCollider.radius > maxSoundRadius)
+            soundCollider.radius = maxSoundRadius;
+
 		refreshDataAnimation ();    
 		updateConsoleData ();
 	}
@@ -161,6 +169,7 @@ public class HeroController : MonoBehaviour {
 		console.Grounded = grounded;
 		console.GroundDistance = groundDistance;
 		console.Direction = (int)player.transform.eulerAngles.y;
+        console.SoundRadius = soundCollider.radius;
 	}
 
 	private void refreshDataAnimation ()

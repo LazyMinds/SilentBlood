@@ -13,19 +13,21 @@ public class Console : MonoBehaviour {
 	private bool grounded = true;
 	private float groundDistance = 0;
 	private int direction = 0;
+    private float soundRadius = 0;
 	private bool soundSpotted = false;
 	private bool viewSpotted = false;
 
 	void Update () {
 		if (inGameConsoleText != null) {
-			inGameConsoleText.text =
-				"ChargeJump : "+chargeJump.ToString() + "\n" +
-				"ChargeJumpForce : " + currentJumpForce.ToString () + "\n" +
-				"Velocity x : " + velocityX.ToString () + "\n" +
-				"Velocity y : " + velocityY.ToString () + "\n" +
-				"Grounded : " + grounded.ToString () + "\n" +
-				"Ground Distance : " + groundDistance.ToString () + "\n" +
-				"\n" +
+            inGameConsoleText.text =
+                "ChargeJump : " + chargeJump.ToString() + "\n" +
+                "ChargeJumpForce : " + currentJumpForce.ToString() + "\n" +
+                "Velocity x : " + velocityX.ToString() + "\n" +
+                "Velocity y : " + velocityY.ToString() + "\n" +
+                "Grounded : " + grounded.ToString() + "\n" +
+                "Ground Distance : " + groundDistance.ToString() + "\n" +
+                "\n" +
+                "Sound Radius: " + soundRadius.ToString() + "\n" +
 				"Sound Spotted : " + soundSpotted.ToString() + "\n" +
 				"View Spotted : " + viewSpotted.ToString();
 
@@ -94,6 +96,12 @@ public class Console : MonoBehaviour {
 			direction = value;
 		}
 	}
+
+    public float SoundRadius
+    {
+        get { return soundRadius; }
+        set { soundRadius = value; }
+    }
 
 	public bool SoundSpotted {
 		get {
